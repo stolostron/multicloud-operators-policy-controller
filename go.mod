@@ -1,4 +1,4 @@
-module github.ibm.com/IBMPrivateCloud/multicloud-operators-policy-controller
+module github.com/IBM/multicloud-operators-policy-controller
 
 require (
 	github.com/go-openapi/spec v0.17.2

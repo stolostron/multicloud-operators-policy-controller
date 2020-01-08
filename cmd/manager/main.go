@@ -25,8 +25,8 @@ import (
 	_ "k8s.io/client-go/plugin/pkg/client/auth"
 	"k8s.io/client-go/rest"
 
-	"github.ibm.com/IBMPrivateCloud/multicloud-operators-policy-controller/pkg/apis"
-	"github.ibm.com/IBMPrivateCloud/multicloud-operators-policy-controller/pkg/controller"
+	"github.com/IBM/multicloud-operators-policy-controller/pkg/apis"
+	"github.com/IBM/multicloud-operators-policy-controller/pkg/controller"
 
 	"github.com/operator-framework/operator-sdk/pkg/k8sutil"
 	kubemetrics "github.com/operator-framework/operator-sdk/pkg/kube-metrics"
@@ -36,14 +36,15 @@ import (
 	"github.com/operator-framework/operator-sdk/pkg/restmapper"
 	sdkVersion "github.com/operator-framework/operator-sdk/version"
 	"github.com/spf13/pflag"
-	common "github.ibm.com/IBMPrivateCloud/multicloud-operators-policy-controller/pkg/common"
-	policyStatusHandler "github.ibm.com/IBMPrivateCloud/multicloud-operators-policy-controller/pkg/controller/samplepolicy"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
 	"sigs.k8s.io/controller-runtime/pkg/client/config"
 	logf "sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 	"sigs.k8s.io/controller-runtime/pkg/manager/signals"
+
+	common "github.com/IBM/multicloud-operators-policy-controller/pkg/common"
+	policyStatusHandler "github.com/IBM/multicloud-operators-policy-controller/pkg/controller/samplepolicy"
 )
 
 // Change below variables to serve metrics on different host or port.

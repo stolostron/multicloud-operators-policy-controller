@@ -24,9 +24,9 @@ import (
 
 func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenAPIDefinition {
 	return map[string]common.OpenAPIDefinition{
-		"github.ibm.com/IBMPrivateCloud/multicloud-operators-policy-controller/pkg/apis/policies/v1alpha1.SamplePolicy":       schema_pkg_apis_policies_v1alpha1_SamplePolicy(ref),
-		"github.ibm.com/IBMPrivateCloud/multicloud-operators-policy-controller/pkg/apis/policies/v1alpha1.SamplePolicySpec":   schema_pkg_apis_policies_v1alpha1_SamplePolicySpec(ref),
-		"github.ibm.com/IBMPrivateCloud/multicloud-operators-policy-controller/pkg/apis/policies/v1alpha1.SamplePolicyStatus": schema_pkg_apis_policies_v1alpha1_SamplePolicyStatus(ref),
+		"github.com/IBM/multicloud-operators-policy-controller/pkg/apis/policies/v1alpha1.SamplePolicy":       schema_pkg_apis_policies_v1alpha1_SamplePolicy(ref),
+		"github.com/IBM/multicloud-operators-policy-controller/pkg/apis/policies/v1alpha1.SamplePolicySpec":   schema_pkg_apis_policies_v1alpha1_SamplePolicySpec(ref),
+		"github.com/IBM/multicloud-operators-policy-controller/pkg/apis/policies/v1alpha1.SamplePolicyStatus": schema_pkg_apis_policies_v1alpha1_SamplePolicyStatus(ref),
 	}
 }
 
@@ -58,19 +58,19 @@ func schema_pkg_apis_policies_v1alpha1_SamplePolicy(ref common.ReferenceCallback
 					},
 					"spec": {
 						SchemaProps: spec.SchemaProps{
-							Ref: ref("github.ibm.com/IBMPrivateCloud/multicloud-operators-policy-controller/pkg/apis/policies/v1alpha1.SamplePolicySpec"),
+							Ref: ref("github.com/IBM/multicloud-operators-policy-controller/pkg/apis/policies/v1alpha1.SamplePolicySpec"),
 						},
 					},
 					"status": {
 						SchemaProps: spec.SchemaProps{
-							Ref: ref("github.ibm.com/IBMPrivateCloud/multicloud-operators-policy-controller/pkg/apis/policies/v1alpha1.SamplePolicyStatus"),
+							Ref: ref("github.com/IBM/multicloud-operators-policy-controller/pkg/apis/policies/v1alpha1.SamplePolicyStatus"),
 						},
 					},
 				},
 			},
 		},
 		Dependencies: []string{
-			"github.ibm.com/IBMPrivateCloud/multicloud-operators-policy-controller/pkg/apis/policies/v1alpha1.SamplePolicySpec", "github.ibm.com/IBMPrivateCloud/multicloud-operators-policy-controller/pkg/apis/policies/v1alpha1.SamplePolicyStatus", "k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"},
+			"github.com/IBM/multicloud-operators-policy-controller/pkg/apis/policies/v1alpha1.SamplePolicySpec", "github.com/IBM/multicloud-operators-policy-controller/pkg/apis/policies/v1alpha1.SamplePolicyStatus", "k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"},
 	}
 }
 
@@ -97,7 +97,7 @@ func schema_pkg_apis_policies_v1alpha1_SamplePolicySpec(ref common.ReferenceCall
 					"namespaceSelector": {
 						SchemaProps: spec.SchemaProps{
 							Description: "enforce, inform",
-							Ref:         ref("github.ibm.com/IBMPrivateCloud/multicloud-operators-policy-controller/pkg/apis/policies/v1alpha1.Target"),
+							Ref:         ref("github.com/IBM/multicloud-operators-policy-controller/pkg/apis/policies/v1alpha1.Target"),
 						},
 					},
 					"labelSelector": {
@@ -143,7 +143,7 @@ func schema_pkg_apis_policies_v1alpha1_SamplePolicySpec(ref common.ReferenceCall
 			},
 		},
 		Dependencies: []string{
-			"github.ibm.com/IBMPrivateCloud/multicloud-operators-policy-controller/pkg/apis/policies/v1alpha1.Target"},
+			"github.com/IBM/multicloud-operators-policy-controller/pkg/apis/policies/v1alpha1.Target"},
 	}
 }
 

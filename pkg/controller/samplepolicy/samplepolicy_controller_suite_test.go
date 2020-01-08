@@ -19,12 +19,13 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.ibm.com/IBMPrivateCloud/multicloud-operators-policy-controller/pkg/apis"
-	policiesv1alpha1 "github.ibm.com/IBMPrivateCloud/multicloud-operators-policy-controller/pkg/apis/policies/v1alpha1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/rest"
 	"sigs.k8s.io/controller-runtime/pkg/envtest"
+
+	"github.com/IBM/multicloud-operators-policy-controller/pkg/apis"
+	policiesv1alpha1 "github.com/IBM/multicloud-operators-policy-controller/pkg/apis/policies/v1alpha1"
 )
 
 var cfg *rest.Config
