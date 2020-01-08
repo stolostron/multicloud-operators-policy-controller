@@ -5,9 +5,33 @@ metadata:
   name: multicloud-operators-policy-controller
 rules:
   - apiGroups:
+    - policies.ibm.com
+    resources:
+    - testpolicies
+    - testpolicies/status
+    verbs:
+    - create
+    - delete
+    - get
+    - list
+    - patch
+    - update
+    - watch
+  - apiGroups:
     - rbac.authorization.k8s.io
     resources:
+    - roles
+    - clusterroles
+    - rolebindings
     - clusterrolebindings
+    verbs:
+    - get
+    - list
+    - watch
+  - apiGroups:
+    - ""
+    resources:
+    - namespaces
     verbs:
     - get
     - list
