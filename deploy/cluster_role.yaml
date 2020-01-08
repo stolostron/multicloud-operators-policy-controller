@@ -7,8 +7,8 @@ rules:
   - apiGroups:
     - policies.ibm.com
     resources:
-    - testpolicies
-    - testpolicies/status
+    - samplepolicies
+    - samplepolicies/status
     verbs:
     - create
     - delete
