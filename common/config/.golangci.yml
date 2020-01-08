@@ -38,6 +38,7 @@ linters:
     - funlen
     - bodyclose
     - wsl
+    - gomnd
   fast: false
 
 linters-settings:
