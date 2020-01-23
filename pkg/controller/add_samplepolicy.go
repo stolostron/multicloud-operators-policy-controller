@@ -14,7 +14,7 @@
 package controller
 
 import (
-	"github.ibm.com/IBMPrivateCloud/multicloud-operators-policy-controller/pkg/controller/samplepolicy"
+	"github.com/IBM/multicloud-operators-policy-controller/pkg/controller/samplepolicy"
 )
 
 func init() {

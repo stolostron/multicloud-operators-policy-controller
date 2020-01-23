@@ -17,8 +17,6 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	policiesv1alpha1 "github.ibm.com/IBMPrivateCloud/multicloud-operators-policy-controller/pkg/apis/policies/v1alpha1"
-	"github.ibm.com/IBMPrivateCloud/multicloud-operators-policy-controller/pkg/common"
 	coretypes "k8s.io/api/core/v1"
 	sub "k8s.io/api/rbac/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -30,6 +28,9 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client/fake"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
+
+	policiesv1alpha1 "github.com/IBM/multicloud-operators-policy-controller/pkg/apis/policies/v1alpha1"
+	"github.com/IBM/multicloud-operators-policy-controller/pkg/common"
 )
 
 var mgr manager.Manager

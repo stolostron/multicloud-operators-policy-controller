@@ -20,6 +20,7 @@
     | [tslint](https://github.com/palantir/tslint#installation--usage) | [v5.18.0](https://github.com/palantir/tslint/releases/tag/5.18.0)
     | [prototool](https://github.com/uber/prototool/blob/dev/docs/install.md) | `7df3b95` |
     | [goimports](https://godoc.org/golang.org/x/tools/cmd/goimports) | `3792095` |
+- [kuberbuilder](https://github.com/kubernetes-sigs/kubebuilder)
 
 ## Developer quick start
 
@@ -28,6 +29,14 @@
 ```bash
 export GIT_HOST=github.com/<YOUR_GITHUB_ID>
 ```
+
+- Install `golangci-lint`
+```bash
+brew install golangci/tap/golangci-lint
+```
+
+- Install `kubebuilder`
+Follow instruction [here](https://book.kubebuilder.io/quick-start.html#installation) to install kubebuilder
 
 - Run the `linter` and `test` before building the binary.
 

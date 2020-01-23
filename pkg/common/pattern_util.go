@@ -19,7 +19,8 @@ import (
 	"strings"
 
 	"github.com/golang/glog"
-	policiesv1alpha1 "github.ibm.com/IBMPrivateCloud/multicloud-operators-policy-controller/pkg/apis/policies/v1alpha1"
+
+	policiesv1alpha1 "github.com/IBM/multicloud-operators-policy-controller/pkg/apis/policies/v1alpha1"
 )
 
 // IfMatch check matches
