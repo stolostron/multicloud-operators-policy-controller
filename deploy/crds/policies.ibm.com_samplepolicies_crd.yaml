@@ -1,20 +1,20 @@
 apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
 metadata:
-  name: samplepolicies.policies.ibm.com
+  name: testpolicies.policies.ibm.com
 spec:
   group: policies.ibm.com
   names:
-    kind: SamplePolicy
-    listKind: SamplePolicyList
-    plural: samplepolicies
-    singular: samplepolicy
+    kind: TestPolicy
+    listKind: TestPolicyList
+    plural: testpolicies
+    singular: testpolicy
   scope: Namespaced
   subresources:
     status: {}
   validation:
     openAPIV3Schema:
-      description: SamplePolicy is the Schema for the samplepolicies API
+      description: TestPolicy is the Schema for the testpolicies API
       properties:
         apiVersion:
           description: 'APIVersion defines the versioned schema of this representation
@@ -29,7 +29,7 @@ spec:
         metadata:
           type: object
         spec:
-          description: SamplePolicySpec defines the desired state of SamplePolicy
+          description: TestPolicySpec defines the desired state of TestPolicy
           properties:
             labelSelector:
               additionalProperties:
@@ -63,7 +63,7 @@ spec:
               type: string
           type: object
         status:
-          description: SamplePolicyStatus defines the observed state of SamplePolicy
+          description: TestPolicyStatus defines the observed state of TestPolicy
           properties:
             compliant:
               description: ComplianceState shows the state of enforcement

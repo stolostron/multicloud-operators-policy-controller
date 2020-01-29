@@ -1,0 +1,15 @@
+apiVersion: policies.ibm.com/v1alpha1
+kind: SamplePolicy
+metadata:
+  name: example-samplepolicy
+spec:
+  severity: low
+  namespaceSelector:
+    include: ["default","kube-*"]
+    exclude: ["kube-system"]
+  remediationAction: inform
+  maxClusterRoleBindingGroups: 10
+  maxClusterRoleBindingUsers: 10
+  maxRoleBindingGroupsPerNamespace: 2
+  maxRoleBindingUsersPerNamespace: 2
+

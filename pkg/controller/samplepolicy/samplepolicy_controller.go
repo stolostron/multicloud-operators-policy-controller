@@ -53,12 +53,12 @@ const grcCategory = "system-and-information-integrity"
 var availablePolicies common.SyncedPolicyMap
 
 // PlcChan a channel used to pass policies ready for update
-var PlcChan chan *policiesv1alpha1.SamplePolicy
+var PlcChan chan *policiesv1alpha1.TestPolicy
 
 // KubeClient a k8s client used for k8s native resources
 var KubeClient *kubernetes.Interface
 
-var reconcilingAgent *ReconcileSamplePolicy
+var reconcilingAgent *ReconcileTestPolicy
 
 // NamespaceWatched defines which namespace we can watch for the GRC policies and ignore others
 var NamespaceWatched string
@@ -69,7 +69,7 @@ var EventOnParent string
 // PrometheusAddr port addr for prom metrics
 var PrometheusAddr string
 
-// Add creates a new SamplePolicy Controller and adds it to the Manager. The Manager will set fields on the Controller
+// Add creates a new TestPolicy Controller and adds it to the Manager. The Manager will set fields on the Controller
 // and Start it when the Manager is Started.
 func Add(mgr manager.Manager) error {
 	return add(mgr, newReconciler(mgr))
@@ -77,26 +77,26 @@ func Add(mgr manager.Manager) error {
 
 // newReconciler returns a new reconcile.Reconciler
 func newReconciler(mgr manager.Manager) reconcile.Reconciler {
-	return &ReconcileSamplePolicy{client: mgr.GetClient(), scheme: mgr.GetScheme(), recorder: mgr.GetEventRecorderFor("samplepolicy-controller")}
+	return &ReconcileTestPolicy{client: mgr.GetClient(), scheme: mgr.GetScheme(), recorder: mgr.GetEventRecorderFor("testpolicy-controller")}
 }
 
 // add adds a new Controller to mgr with r as the reconcile.Reconciler
 func add(mgr manager.Manager, r reconcile.Reconciler) error {
 	// Create a new controller
-	c, err := controller.New("samplepolicy-controller", mgr, controller.Options{Reconciler: r})
+	c, err := controller.New("testpolicy-controller", mgr, controller.Options{Reconciler: r})
 	if err != nil {
 		return err
 	}
 
-	// Watch for changes to primary resource SamplePolicy
-	err = c.Watch(&source.Kind{Type: &policiesv1alpha1.SamplePolicy{}}, &handler.EnqueueRequestForObject{})
+	// Watch for changes to primary resource TestPolicy
+	err = c.Watch(&source.Kind{Type: &policiesv1alpha1.TestPolicy{}}, &handler.EnqueueRequestForObject{})
 	if err != nil {
 		return err
 	}
-	// Watch for changes to secondary resource Pods and requeue the owner SamplePolicy
+	// Watch for changes to secondary resource Pods and requeue the owner TestPolicy
 	err = c.Watch(&source.Kind{Type: &corev1.Pod{}}, &handler.EnqueueRequestForOwner{
 		IsController: true,
-		OwnerType:    &policiesv1alpha1.SamplePolicy{},
+		OwnerType:    &policiesv1alpha1.TestPolicy{},
 	})
 	if err != nil {
 		return err
@@ -108,18 +108,18 @@ func add(mgr manager.Manager, r reconcile.Reconciler) error {
 // Initialize to initialize some controller variables
 func Initialize(kClient *kubernetes.Interface, mgr manager.Manager, namespace, eventParent string) {
 	KubeClient = kClient
-	PlcChan = make(chan *policiesv1alpha1.SamplePolicy, 100) //buffering up to 100 policies for update
+	PlcChan = make(chan *policiesv1alpha1.TestPolicy, 100) //buffering up to 100 policies for update
 
 	NamespaceWatched = namespace
 
 	EventOnParent = strings.ToLower(eventParent)
 }
 
-// blank assignment to verify that ReconcileSamplePolicy implements reconcile.Reconciler
-var _ reconcile.Reconciler = &ReconcileSamplePolicy{}
+// blank assignment to verify that ReconcileTestPolicy implements reconcile.Reconciler
+var _ reconcile.Reconciler = &ReconcileTestPolicy{}
 
-// ReconcileSamplePolicy reconciles a SamplePolicy object
-type ReconcileSamplePolicy struct {
+// ReconcileTestPolicy reconciles a TestPolicy object
+type ReconcileTestPolicy struct {
 	// This client, initialized using mgr.Client() above, is a split client
 	// that reads objects from the cache and writes to the apiserver
 	client   client.Client
@@ -127,17 +127,17 @@ type ReconcileSamplePolicy struct {
 	recorder record.EventRecorder
 }
 
-// Reconcile reads that state of the cluster for a SamplePolicy object and makes changes based on the state read
-// and what is in the SamplePolicy.Spec
+// Reconcile reads that state of the cluster for a TestPolicy object and makes changes based on the state read
+// and what is in the TestPolicy.Spec
 // Note:
 // The Controller will requeue the Request to be processed again if the returned error is non-nil or
 // Result.Requeue is true, otherwise upon completion it will remove the work from the queue.
-func (r *ReconcileSamplePolicy) Reconcile(request reconcile.Request) (reconcile.Result, error) {
+func (r *ReconcileTestPolicy) Reconcile(request reconcile.Request) (reconcile.Result, error) {
 	reqLogger := log.WithValues("Request.Namespace", request.Namespace, "Request.Name", request.Name)
-	reqLogger.Info("Reconciling SamplePolicy")
+	reqLogger.Info("Reconciling TestPolicy")
 
-	// Fetch the SamplePolicy instance
-	instance := &policiesv1alpha1.SamplePolicy{}
+	// Fetch the TestPolicy instance
+	instance := &policiesv1alpha1.TestPolicy{}
 	if reconcilingAgent == nil {
 		reconcilingAgent = r
 	}
@@ -207,11 +207,11 @@ func (r *ReconcileSamplePolicy) Reconcile(request reconcile.Request) (reconcile.
 
 // PeriodicallyExecSamplePolicies always check status
 func PeriodicallyExecSamplePolicies(freq uint) {
-	var plcToUpdateMap map[string]*policiesv1alpha1.SamplePolicy
+	var plcToUpdateMap map[string]*policiesv1alpha1.TestPolicy
 	for {
 		start := time.Now()
 		printMap(availablePolicies.PolicyMap)
-		plcToUpdateMap = make(map[string]*policiesv1alpha1.SamplePolicy)
+		plcToUpdateMap = make(map[string]*policiesv1alpha1.TestPolicy)
 		for namespace, policy := range availablePolicies.PolicyMap {
 			//For each namespace, fetch all the RoleBindings in that NS according to the policy selector
 			//For each RoleBindings get the number of users
@@ -258,7 +258,7 @@ func PeriodicallyExecSamplePolicies(freq uint) {
 	}
 }
 
-func ensureDefaultLabel(instance *policiesv1alpha1.SamplePolicy) (updateNeeded bool) {
+func ensureDefaultLabel(instance *policiesv1alpha1.TestPolicy) (updateNeeded bool) {
 	//we need to ensure this label exists -> category: "System and Information Integrity"
 	if instance.ObjectMeta.Labels == nil {
 		newlbl := make(map[string]string)
@@ -277,7 +277,7 @@ func ensureDefaultLabel(instance *policiesv1alpha1.SamplePolicy) (updateNeeded b
 	return false
 }
 
-func checkUnNamespacedPolicies(plcToUpdateMap map[string]*policiesv1alpha1.SamplePolicy) error {
+func checkUnNamespacedPolicies(plcToUpdateMap map[string]*policiesv1alpha1.TestPolicy) error {
 	plcMap := convertMaptoPolicyNameKey()
 	// group the policies with cluster users and the ones with groups
 	// take the plc with min users and groups and make it your baseline
@@ -322,15 +322,15 @@ func checkAllClusterLevel(clusterRoleBindingList *v1.ClusterRoleBindingList) (us
 	return len(usersMap), len(groupsMap)
 }
 
-func convertMaptoPolicyNameKey() map[string]*policiesv1alpha1.SamplePolicy {
-	plcMap := make(map[string]*policiesv1alpha1.SamplePolicy)
+func convertMaptoPolicyNameKey() map[string]*policiesv1alpha1.TestPolicy {
+	plcMap := make(map[string]*policiesv1alpha1.TestPolicy)
 	for _, policy := range availablePolicies.PolicyMap {
 		plcMap[policy.Name] = policy
 	}
 	return plcMap
 }
 
-func checkViolationsPerNamespace(roleBindingList *v1.RoleBindingList, plc *policiesv1alpha1.SamplePolicy) (userV, groupV int) {
+func checkViolationsPerNamespace(roleBindingList *v1.RoleBindingList, plc *policiesv1alpha1.TestPolicy) (userV, groupV int) {
 	usersMap := make(map[string]bool)
 	groupsMap := make(map[string]bool)
 	for _, roleBinding := range roleBindingList.Items {
@@ -353,7 +353,7 @@ func checkViolationsPerNamespace(roleBindingList *v1.RoleBindingList, plc *polic
 	return userViolationCount, groupViolationCount
 }
 
-func addViolationCount(plc *policiesv1alpha1.SamplePolicy, userCount int, groupCount int, namespace string) bool {
+func addViolationCount(plc *policiesv1alpha1.TestPolicy, userCount int, groupCount int, namespace string) bool {
 	changed := false
 	msg := fmt.Sprintf("%s violations detected in namespace `%s`, there are %v users violations and %v groups violations",
 		fmt.Sprint(userCount+groupCount),
@@ -385,7 +385,7 @@ func addViolationCount(plc *policiesv1alpha1.SamplePolicy, userCount int, groupC
 	return changed
 }
 
-func checkComplianceBasedOnDetails(plc *policiesv1alpha1.SamplePolicy) {
+func checkComplianceBasedOnDetails(plc *policiesv1alpha1.TestPolicy) {
 	plc.Status.ComplianceState = policiesv1alpha1.Compliant
 	if plc.Status.CompliancyDetails == nil {
 		return
@@ -410,7 +410,7 @@ func checkComplianceBasedOnDetails(plc *policiesv1alpha1.SamplePolicy) {
 	}
 }
 
-func checkComplianceChangeBasedOnDetails(plc *policiesv1alpha1.SamplePolicy) (complianceChanged bool) {
+func checkComplianceChangeBasedOnDetails(plc *policiesv1alpha1.TestPolicy) (complianceChanged bool) {
 	//used in case we also want to know not just the compliance state, but also whether the compliance changed or not.
 	previous := plc.Status.ComplianceState
 	if plc.Status.CompliancyDetails == nil {
@@ -444,7 +444,7 @@ func checkComplianceChangeBasedOnDetails(plc *policiesv1alpha1.SamplePolicy) (co
 	return reflect.DeepEqual(previous, plc.Status.ComplianceState)
 }
 
-func updatePolicyStatus(policies map[string]*policiesv1alpha1.SamplePolicy) (*policiesv1alpha1.SamplePolicy, error) {
+func updatePolicyStatus(policies map[string]*policiesv1alpha1.TestPolicy) (*policiesv1alpha1.TestPolicy, error) {
 	for _, instance := range policies { // policies is a map where: key = plc.Name, value = pointer to plc
 		err := reconcilingAgent.client.Status().Update(context.TODO(), instance)
 		if err != nil {
@@ -469,7 +469,7 @@ func getContainerID(pod corev1.Pod, containerName string) string {
 	return ""
 }
 
-func handleRemovingPolicy(plc *policiesv1alpha1.SamplePolicy) {
+func handleRemovingPolicy(plc *policiesv1alpha1.TestPolicy) {
 	for k, v := range availablePolicies.PolicyMap {
 		if v.Name == plc.Name {
 			availablePolicies.RemoveObject(k)
@@ -477,7 +477,7 @@ func handleRemovingPolicy(plc *policiesv1alpha1.SamplePolicy) {
 	}
 }
 
-func handleAddingPolicy(plc *policiesv1alpha1.SamplePolicy) error {
+func handleAddingPolicy(plc *policiesv1alpha1.TestPolicy) error {
 	allNamespaces, err := common.GetAllNamespaces()
 	if err != nil {
 		glog.Errorf("reason: error fetching the list of available namespaces, subject: K8s API server, namespace: all, according to policy: %v, additional-info: %v",
@@ -502,7 +502,7 @@ func handleAddingPolicy(plc *policiesv1alpha1.SamplePolicy) error {
 //=================================================================
 //deleteExternalDependency in case the CRD was related to non-k8s resource
 //nolint
-func (r *ReconcileSamplePolicy) deleteExternalDependency(instance *policiesv1alpha1.SamplePolicy) error {
+func (r *ReconcileTestPolicy) deleteExternalDependency(instance *policiesv1alpha1.TestPolicy) error {
 	glog.V(0).Infof("reason: CRD deletion, subject: policy/%v, namespace: %v, according to policy: none, additional-info: none\n",
 		instance.Name,
 		instance.Namespace)
@@ -536,7 +536,7 @@ func removeString(slice []string, s string) (result []string) {
 
 //=================================================================
 // Helper functions that pretty prints a map
-func printMap(myMap map[string]*policiesv1alpha1.SamplePolicy) {
+func printMap(myMap map[string]*policiesv1alpha1.TestPolicy) {
 	if len(myMap) == 0 {
 		fmt.Println("Waiting for policies to be available for processing... ")
 		return
@@ -548,7 +548,7 @@ func printMap(myMap map[string]*policiesv1alpha1.SamplePolicy) {
 	}
 }
 
-func createParentPolicyEvent(instance *policiesv1alpha1.SamplePolicy) {
+func createParentPolicyEvent(instance *policiesv1alpha1.TestPolicy) {
 	if len(instance.OwnerReferences) == 0 {
 		return //there is nothing to do, since no owner is set
 	}
@@ -565,7 +565,7 @@ func createParentPolicyEvent(instance *policiesv1alpha1.SamplePolicy) {
 		convertPolicyStatusToString(instance))
 }
 
-func createParentPolicy(instance *policiesv1alpha1.SamplePolicy) policiesv1alpha1.Policy {
+func createParentPolicy(instance *policiesv1alpha1.TestPolicy) policiesv1alpha1.Policy {
 	ns := common.ExtractNamespaceLabel(instance)
 	if ns == "" {
 		ns = NamespaceWatched
@@ -586,7 +586,7 @@ func createParentPolicy(instance *policiesv1alpha1.SamplePolicy) policiesv1alpha
 
 //=================================================================
 // convertPolicyStatusToString to be able to pass the status as event
-func convertPolicyStatusToString(plc *policiesv1alpha1.SamplePolicy) (results string) {
+func convertPolicyStatusToString(plc *policiesv1alpha1.TestPolicy) (results string) {
 	result := "ComplianceState is still undetermined"
 	if plc.Status.ComplianceState == "" {
 		return result

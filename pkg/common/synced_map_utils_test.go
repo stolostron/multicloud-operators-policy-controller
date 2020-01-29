@@ -37,12 +37,12 @@ import (
 			conditions:
 				ownership: [ReplicaSet, Deployment, DeamonSet, ReplicationController]
 */
-var plc = &policiesv1alpha1.SamplePolicy{
+var plc = &policiesv1alpha1.TestPolicy{
 	ObjectMeta: metav1.ObjectMeta{
 		Name:      "testPolicy",
 		Namespace: "default",
 	},
-	Spec: policiesv1alpha1.SamplePolicySpec{
+	Spec: policiesv1alpha1.TestPolicySpec{
 		RemediationAction: policiesv1alpha1.Enforce,
 		NamespaceSelector: policiesv1alpha1.Target{
 			Include: []string{"default"},
@@ -52,7 +52,7 @@ var plc = &policiesv1alpha1.SamplePolicy{
 }
 
 var sm = SyncedPolicyMap{
-	PolicyMap: make(map[string]*policiesv1alpha1.SamplePolicy),
+	PolicyMap: make(map[string]*policiesv1alpha1.TestPolicy),
 }
 
 //TestGetObject testing get object in map
