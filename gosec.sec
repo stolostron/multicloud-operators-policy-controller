@@ -1,0 +1,23 @@
+{
+	"issues": [
+		{
+			"engineId": "gosec",
+			"ruleId": "G402",
+			"cwe": {
+				"ID": "295",
+				"URL": "https://cwe.mitre.org/data/definitions/295.html"
+			},
+			"primaryLocation": {
+				"message": "TLS InsecureSkipVerify set true.",
+				"filePath": "vuln.go",
+				"textRange": {
+					"startLine": 10,
+					"endLine": 10
+				}
+			},
+			"type": "VULNERABILITY",
+			"severity": "BLOCKER",
+			"effortMinutes": 5
+		}
+	]
+}
