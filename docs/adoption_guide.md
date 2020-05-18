@@ -12,27 +12,27 @@
 
 ## Run sample policy controller locally
 
-To build and run it locally, install operator SDK CLI from https://github.com/operator-framework/operator-sdk/blob/master/doc/user/install-operator-sdk.md.
+To build and run it locally, install operator SDK CLI from https://sdk.operatorframework.io/docs/install-operator-sdk/.
 
 Make sure to export GO111MODULE=on as it uses go mod as dependency manager.
 
 ```bash
 export GO111MODULE=on
-kubectl apply -f deploy/crds/policies.ibm.com_samplepolicies_crd.yaml
-operator-sdk up local --verbose
+kubectl apply -f deploy/crds/policies.open-cluster-management.io_samplepolicies_crd.yaml
+operator-sdk run --local --verbose
 ```
 It takes seconds for the sample policy controller to fully start. You will get the message `Waiting for policies to be available for processing...` once it's fully started and watching for policies.
 
 To test a sample policy, open another command prompt to deploy the sample policy file
 ```
-kubectl apply -f deploy/crds/policies.ibm.com_v1alpha1_samplepolicy_cr.yaml -n default
+kubectl apply -f deploy/crds/policies.open-cluster-management.io_v1_samplepolicy_cr.yaml -n default
 ```
 The local process outputs the following messages
 ```
 {"level":"info","ts":1572447165.453119,"logger":"controller_samplepolicy","msg":"Reconciling SamplePolicy","Request.Namespace":"default","Request.Name":"example-samplepolicy"}
 Available policies in namespaces:
-namespace = kube-public; policy = example-samplepolicy
-namespace = default; policy = example-samplepolicy
+namespace = kube-public/example-samplepolicy; policy = example-samplepolicy
+namespace = default/example-samplepolicy; policy = example-samplepolicy
 ```
 Check the sample policy resource using `kubectl describe SamplePolicy example-samplepolicy -n default`. The policy controller checks the cluster and reports the compliancy status in the policy.  The status field in the policy is updated with  the compliant status, for example-
 ```
@@ -65,7 +65,7 @@ for file in $(find . -name "*.go" -type f); do  sed -i "" "s/SamplePolicy/TestPo
 ```
 ### Change CRD
 
-CRD definition file is located at: [deploy/crds/policies.ibm.com_samplepolicies_crd.yaml](../deploy/crds/policies.ibm.com_samplepolicies_crd.yaml)
+CRD definition file is located at: [deploy/crds/policies.open-cluster-management.io_samplepolicies_crd.yaml](../deploy/crds/policies.open-cluster-management.io_samplepolicies_crd.yaml)
 
 Change below section to match the kind you specified in previous step.
 
@@ -79,7 +79,7 @@ names:
 
 ### Change CR
 
-A sample CR is located at: [deploy/crds/policies.ibm.com_v1alpha1_samplepolicy_cr.yaml](../deploy/crds/policies.ibm.com_v1alpha1_samplepolicy_cr.yaml)
+A sample CR is located at: [deploy/crds/policies.open-cluster-management.io_v1_samplepolicy_cr.yaml](../deploy/crds/policies.open-cluster-management.io_v1_samplepolicy_cr.yaml)
 
 Change below section to match the kind you specified in previous step.
 

@@ -24,13 +24,13 @@ import (
 	"k8s.io/client-go/rest"
 	"sigs.k8s.io/controller-runtime/pkg/envtest"
 
-	"github.com/IBM/multicloud-operators-policy-controller/pkg/apis"
-	policiesv1alpha1 "github.com/IBM/multicloud-operators-policy-controller/pkg/apis/policies/v1alpha1"
+	"github.com/open-cluster-management/multicloud-operators-policy-controller/pkg/apis"
+	policiesv1 "github.com/open-cluster-management/multicloud-operators-policy-controller/pkg/apis/policies/v1"
 )
 
 var cfg *rest.Config
 
-var samplePolicy = policiesv1alpha1.SamplePolicy{
+var samplePolicy = policiesv1.SamplePolicy{
 	ObjectMeta: metav1.ObjectMeta{
 		Name:      "foo",
 		Namespace: "default",

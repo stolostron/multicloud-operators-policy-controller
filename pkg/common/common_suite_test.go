@@ -27,7 +27,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/envtest"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 
-	"github.com/IBM/multicloud-operators-policy-controller/pkg/apis"
+	"github.com/open-cluster-management/multicloud-operators-policy-controller/pkg/apis"
 )
 
 var cfg *rest.Config
@@ -48,7 +48,7 @@ func TestMain(m *testing.M) {
 	os.Exit(code)
 }
 
-// StartTestManager adds recFn
+// StartTestManager adds recFn.
 func StartTestManager(mgr manager.Manager, g *gomega.GomegaWithT) (chan struct{}, *sync.WaitGroup) {
 	stop := make(chan struct{})
 	wg := &sync.WaitGroup{}

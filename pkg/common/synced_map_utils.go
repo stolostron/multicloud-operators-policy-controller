@@ -17,18 +17,18 @@ package common
 import (
 	"sync"
 
-	policiesv1alpha1 "github.com/IBM/multicloud-operators-policy-controller/pkg/apis/policies/v1alpha1"
+	policiesv1 "github.com/open-cluster-management/multicloud-operators-policy-controller/pkg/apis/policies/v1"
 )
 
-//SyncedPolicyMap a thread safe map
+//SyncedPolicyMap a thread safe map.
 type SyncedPolicyMap struct {
-	PolicyMap map[string]*policiesv1alpha1.SamplePolicy
+	PolicyMap map[string]*policiesv1.SamplePolicy
 	//Mx for making the map thread safe
 	Mx sync.RWMutex
 }
 
-//GetObject used for fetching objects from the synced map
-func (spm *SyncedPolicyMap) GetObject(key string) (value *policiesv1alpha1.SamplePolicy, found bool) {
+//GetObject used for fetching objects from the synced map.
+func (spm *SyncedPolicyMap) GetObject(key string) (value *policiesv1.SamplePolicy, found bool) {
 	spm.Mx.Lock()
 	defer spm.Mx.Unlock()
 	//check if the map is initialized, if not initilize it
@@ -41,18 +41,18 @@ func (spm *SyncedPolicyMap) GetObject(key string) (value *policiesv1alpha1.Sampl
 	return nil, false
 }
 
-// AddObject safely add to map
-func (spm *SyncedPolicyMap) AddObject(key string, plc *policiesv1alpha1.SamplePolicy) {
+// AddObject safely add to map.
+func (spm *SyncedPolicyMap) AddObject(key string, plc *policiesv1.SamplePolicy) {
 	spm.Mx.Lock()
 	defer spm.Mx.Unlock()
 	//check if the map is initialized, if not initilize it
 	if spm.PolicyMap == nil {
-		spm.PolicyMap = make(map[string]*policiesv1alpha1.SamplePolicy)
+		spm.PolicyMap = make(map[string]*policiesv1.SamplePolicy)
 	}
 	spm.PolicyMap[key] = plc
 }
 
-// RemoveObject safely remove from map
+// RemoveObject safely remove from map.
 func (spm *SyncedPolicyMap) RemoveObject(key string) {
 	spm.Mx.Lock()
 	defer spm.Mx.Unlock()
