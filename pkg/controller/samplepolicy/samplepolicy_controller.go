@@ -212,7 +212,8 @@ func PeriodicallyExecSamplePolicies(freq uint) {
 		start := time.Now()
 		printMap(availablePolicies.PolicyMap)
 		plcToUpdateMap = make(map[string]*policiesv1.SamplePolicy)
-		for namespace, policy := range availablePolicies.PolicyMap {
+		for resource, policy := range availablePolicies.PolicyMap {
+			namespace := strings.Split(resource, "/")[0]
 			//For each namespace, fetch all the RoleBindings in that NS according to the policy selector
 			//For each RoleBindings get the number of users
 			//update the status internal map
@@ -486,7 +487,8 @@ func handleAddingPolicy(plc *policiesv1.SamplePolicy) error {
 	}
 	//clean up that policy from the existing namepsaces, in case the modification is in the namespace selector
 	for _, ns := range allNamespaces {
-		if policy, found := availablePolicies.GetObject(ns); found {
+		key := fmt.Sprintf("%s/%s", ns, plc.Name)
+		if policy, found := availablePolicies.GetObject(key); found {
 			if policy.Name == plc.Name {
 				availablePolicies.RemoveObject(ns)
 			}
@@ -494,7 +496,8 @@ func handleAddingPolicy(plc *policiesv1.SamplePolicy) error {
 	}
 	selectedNamespaces := common.GetSelectedNamespaces(plc.Spec.NamespaceSelector.Include, plc.Spec.NamespaceSelector.Exclude, allNamespaces)
 	for _, ns := range selectedNamespaces {
-		availablePolicies.AddObject(ns, plc)
+		key := fmt.Sprintf("%s/%s", ns, plc.Name)
+		availablePolicies.AddObject(key, plc)
 	}
 	return err
 }

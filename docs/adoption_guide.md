@@ -31,8 +31,8 @@ The local process outputs the following messages
 ```
 {"level":"info","ts":1572447165.453119,"logger":"controller_samplepolicy","msg":"Reconciling SamplePolicy","Request.Namespace":"default","Request.Name":"example-samplepolicy"}
 Available policies in namespaces:
-namespace = kube-public; policy = example-samplepolicy
-namespace = default; policy = example-samplepolicy
+namespace = kube-public/example-samplepolicy; policy = example-samplepolicy
+namespace = default/example-samplepolicy; policy = example-samplepolicy
 ```
 Check the sample policy resource using `kubectl describe SamplePolicy example-samplepolicy -n default`. The policy controller checks the cluster and reports the compliancy status in the policy.  The status field in the policy is updated with  the compliant status, for example-
 ```
