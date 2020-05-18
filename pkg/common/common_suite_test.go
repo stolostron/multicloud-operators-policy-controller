@@ -27,7 +27,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/envtest"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 
-	"github.com/IBM/multicloud-operators-policy-controller/pkg/apis"
+	"github.com/open-cluster-management/multicloud-operators-policy-controller/pkg/apis"
 )
 
 var cfg *rest.Config
