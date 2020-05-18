@@ -19,7 +19,7 @@ Make sure to export GO111MODULE=on as it uses go mod as dependency manager.
 ```bash
 export GO111MODULE=on
 kubectl apply -f deploy/crds/policies.open-cluster-management.io_samplepolicies_crd.yaml
-operator-sdk up local --verbose
+operator-sdk run --local --verbose
 ```
 It takes seconds for the sample policy controller to fully start. You will get the message `Waiting for policies to be available for processing...` once it's fully started and watching for policies.
 
