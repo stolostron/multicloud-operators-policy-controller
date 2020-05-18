@@ -12,16 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package v1alpha1
+package v1
 
 import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// RemediationAction : enforce or inform
+// RemediationAction : enforce or inform.
 type RemediationAction string
 
-// Severity : low, medium or high
+// Severity : low, medium or high.
 type Severity string
 
 const (
@@ -32,7 +32,7 @@ const (
 	Inform RemediationAction = "Inform"
 )
 
-// ComplianceState shows the state of enforcement
+// ComplianceState shows the state of enforcement.
 type ComplianceState string
 
 const (
@@ -46,14 +46,14 @@ const (
 	UnknownCompliancy ComplianceState = "UnknownCompliancy"
 )
 
-// Target defines the list of namespaces to include/exclude
+// Target defines the list of namespaces to include/exclude.
 type Target struct {
 	Include []string `json:"include,omitempty"`
 	Exclude []string `json:"exclude,omitempty"`
 }
 
 // SamplePolicySpec defines the desired state of SamplePolicy
-// +k8s:openapi-gen=true
+// +k8s:openapi-gen=true.
 type SamplePolicySpec struct {
 	Severity                         Severity          `json:"severity,omitempty"`          //low, medium, high
 	RemediationAction                RemediationAction `json:"remediationAction,omitempty"` //enforce, inform
@@ -66,7 +66,7 @@ type SamplePolicySpec struct {
 }
 
 // SamplePolicyStatus defines the observed state of SamplePolicy
-// +k8s:openapi-gen=true
+// +k8s:openapi-gen=true.
 type SamplePolicyStatus struct {
 	ComplianceState   ComplianceState                `json:"compliant,omitempty"`         // Compliant, NonCompliant, UnkownCompliancy
 	CompliancyDetails map[string]map[string][]string `json:"compliancyDetails,omitempty"` // reason for non-compliancy
@@ -77,7 +77,7 @@ type SamplePolicyStatus struct {
 // SamplePolicy is the Schema for the samplepolicies API
 // +k8s:openapi-gen=true
 // +kubebuilder:subresource:status
-// +kubebuilder:resource:path=samplepolicies,scope=Namespaced
+// +kubebuilder:resource:path=samplepolicies,scope=Namespaced.
 type SamplePolicy struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
@@ -88,7 +88,7 @@ type SamplePolicy struct {
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
-// SamplePolicyList contains a list of SamplePolicy
+// SamplePolicyList contains a list of SamplePolicy.
 type SamplePolicyList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
@@ -97,7 +97,7 @@ type SamplePolicyList struct {
 
 // Policy is a specification for a Policy resource
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
-// +genclient
+// +genclient.
 type Policy struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata"`
@@ -105,7 +105,7 @@ type Policy struct {
 
 // PolicyList is a list of Policy resources
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
-// +k8s:lister-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+// +k8s:lister-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object.
 type PolicyList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata"`

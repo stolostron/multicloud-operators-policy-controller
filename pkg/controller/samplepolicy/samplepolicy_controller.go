@@ -37,36 +37,36 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 	"sigs.k8s.io/controller-runtime/pkg/source"
 
-	policiesv1alpha1 "github.com/IBM/multicloud-operators-policy-controller/pkg/apis/policies/v1alpha1"
-	"github.com/IBM/multicloud-operators-policy-controller/pkg/common"
+	policiesv1 "github.com/open-cluster-management/multicloud-operators-policy-controller/pkg/apis/policies/v1"
+	"github.com/open-cluster-management/multicloud-operators-policy-controller/pkg/common"
 	//testclient "k8s.io/client-go/kubernetes/fake"
 )
 
 var log = logf.Log.WithName("controller_samplepolicy")
 
-// Finalizer used to ensure consistency when deleting a CRD
-const Finalizer = "finalizer.policies.ibm.com"
+// Finalizer used to ensure consistency when deleting a CRD.
+const Finalizer = "finalizer.policies.open-cluster-management.io"
 
 const grcCategory = "system-and-information-integrity"
 
-// availablePolicies is a cach all all available polices
+// availablePolicies is a cach all all available polices.
 var availablePolicies common.SyncedPolicyMap
 
-// PlcChan a channel used to pass policies ready for update
-var PlcChan chan *policiesv1alpha1.SamplePolicy
+// PlcChan a channel used to pass policies ready for update.
+var PlcChan chan *policiesv1.SamplePolicy
 
-// KubeClient a k8s client used for k8s native resources
+// KubeClient a k8s client used for k8s native resources.
 var KubeClient *kubernetes.Interface
 
 var reconcilingAgent *ReconcileSamplePolicy
 
-// NamespaceWatched defines which namespace we can watch for the GRC policies and ignore others
+// NamespaceWatched defines which namespace we can watch for the GRC policies and ignore others.
 var NamespaceWatched string
 
-// EventOnParent specifies if we also want to send events to the parent policy. Available options are yes/no/ifpresent
+// EventOnParent specifies if we also want to send events to the parent policy. Available options are yes/no/ifpresent.
 var EventOnParent string
 
-// PrometheusAddr port addr for prom metrics
+// PrometheusAddr port addr for prom metrics.
 var PrometheusAddr string
 
 // Add creates a new SamplePolicy Controller and adds it to the Manager. The Manager will set fields on the Controller
@@ -75,12 +75,12 @@ func Add(mgr manager.Manager) error {
 	return add(mgr, newReconciler(mgr))
 }
 
-// newReconciler returns a new reconcile.Reconciler
+// newReconciler returns a new reconcile.Reconciler.
 func newReconciler(mgr manager.Manager) reconcile.Reconciler {
 	return &ReconcileSamplePolicy{client: mgr.GetClient(), scheme: mgr.GetScheme(), recorder: mgr.GetEventRecorderFor("samplepolicy-controller")}
 }
 
-// add adds a new Controller to mgr with r as the reconcile.Reconciler
+// add adds a new Controller to mgr with r as the reconcile.Reconciler.
 func add(mgr manager.Manager, r reconcile.Reconciler) error {
 	// Create a new controller
 	c, err := controller.New("samplepolicy-controller", mgr, controller.Options{Reconciler: r})
@@ -89,14 +89,14 @@ func add(mgr manager.Manager, r reconcile.Reconciler) error {
 	}
 
 	// Watch for changes to primary resource SamplePolicy
-	err = c.Watch(&source.Kind{Type: &policiesv1alpha1.SamplePolicy{}}, &handler.EnqueueRequestForObject{})
+	err = c.Watch(&source.Kind{Type: &policiesv1.SamplePolicy{}}, &handler.EnqueueRequestForObject{})
 	if err != nil {
 		return err
 	}
 	// Watch for changes to secondary resource Pods and requeue the owner SamplePolicy
 	err = c.Watch(&source.Kind{Type: &corev1.Pod{}}, &handler.EnqueueRequestForOwner{
 		IsController: true,
-		OwnerType:    &policiesv1alpha1.SamplePolicy{},
+		OwnerType:    &policiesv1.SamplePolicy{},
 	})
 	if err != nil {
 		return err
@@ -105,20 +105,20 @@ func add(mgr manager.Manager, r reconcile.Reconciler) error {
 	return nil
 }
 
-// Initialize to initialize some controller variables
+// Initialize to initialize some controller variables.
 func Initialize(kClient *kubernetes.Interface, mgr manager.Manager, namespace, eventParent string) {
 	KubeClient = kClient
-	PlcChan = make(chan *policiesv1alpha1.SamplePolicy, 100) //buffering up to 100 policies for update
+	PlcChan = make(chan *policiesv1.SamplePolicy, 100) //buffering up to 100 policies for update
 
 	NamespaceWatched = namespace
 
 	EventOnParent = strings.ToLower(eventParent)
 }
 
-// blank assignment to verify that ReconcileSamplePolicy implements reconcile.Reconciler
+// blank assignment to verify that ReconcileSamplePolicy implements reconcile.Reconciler.
 var _ reconcile.Reconciler = &ReconcileSamplePolicy{}
 
-// ReconcileSamplePolicy reconciles a SamplePolicy object
+// ReconcileSamplePolicy reconciles a SamplePolicy object.
 type ReconcileSamplePolicy struct {
 	// This client, initialized using mgr.Client() above, is a split client
 	// that reads objects from the cache and writes to the apiserver
@@ -137,7 +137,7 @@ func (r *ReconcileSamplePolicy) Reconcile(request reconcile.Request) (reconcile.
 	reqLogger.Info("Reconciling SamplePolicy")
 
 	// Fetch the SamplePolicy instance
-	instance := &policiesv1alpha1.SamplePolicy{}
+	instance := &policiesv1.SamplePolicy{}
 	if reconcilingAgent == nil {
 		reconcilingAgent = r
 	}
@@ -205,13 +205,13 @@ func (r *ReconcileSamplePolicy) Reconcile(request reconcile.Request) (reconcile.
 	return reconcile.Result{}, nil
 }
 
-// PeriodicallyExecSamplePolicies always check status
+// PeriodicallyExecSamplePolicies always check status.
 func PeriodicallyExecSamplePolicies(freq uint) {
-	var plcToUpdateMap map[string]*policiesv1alpha1.SamplePolicy
+	var plcToUpdateMap map[string]*policiesv1.SamplePolicy
 	for {
 		start := time.Now()
 		printMap(availablePolicies.PolicyMap)
-		plcToUpdateMap = make(map[string]*policiesv1alpha1.SamplePolicy)
+		plcToUpdateMap = make(map[string]*policiesv1.SamplePolicy)
 		for namespace, policy := range availablePolicies.PolicyMap {
 			//For each namespace, fetch all the RoleBindings in that NS according to the policy selector
 			//For each RoleBindings get the number of users
@@ -225,7 +225,7 @@ func PeriodicallyExecSamplePolicies(freq uint) {
 				continue
 			}
 			userViolationCount, GroupViolationCount := checkViolationsPerNamespace(roleBindingList, policy)
-			if strings.EqualFold(string(policy.Spec.RemediationAction), string(policiesv1alpha1.Enforce)) {
+			if strings.EqualFold(string(policy.Spec.RemediationAction), string(policiesv1.Enforce)) {
 				glog.V(5).Infof("Enforce is set, but ignored :-)")
 			}
 			if addViolationCount(policy, userViolationCount, GroupViolationCount, namespace) {
@@ -258,7 +258,7 @@ func PeriodicallyExecSamplePolicies(freq uint) {
 	}
 }
 
-func ensureDefaultLabel(instance *policiesv1alpha1.SamplePolicy) (updateNeeded bool) {
+func ensureDefaultLabel(instance *policiesv1.SamplePolicy) (updateNeeded bool) {
 	//we need to ensure this label exists -> category: "System and Information Integrity"
 	if instance.ObjectMeta.Labels == nil {
 		newlbl := make(map[string]string)
@@ -277,7 +277,7 @@ func ensureDefaultLabel(instance *policiesv1alpha1.SamplePolicy) (updateNeeded b
 	return false
 }
 
-func checkUnNamespacedPolicies(plcToUpdateMap map[string]*policiesv1alpha1.SamplePolicy) error {
+func checkUnNamespacedPolicies(plcToUpdateMap map[string]*policiesv1.SamplePolicy) error {
 	plcMap := convertMaptoPolicyNameKey()
 	// group the policies with cluster users and the ones with groups
 	// take the plc with min users and groups and make it your baseline
@@ -322,15 +322,15 @@ func checkAllClusterLevel(clusterRoleBindingList *v1.ClusterRoleBindingList) (us
 	return len(usersMap), len(groupsMap)
 }
 
-func convertMaptoPolicyNameKey() map[string]*policiesv1alpha1.SamplePolicy {
-	plcMap := make(map[string]*policiesv1alpha1.SamplePolicy)
+func convertMaptoPolicyNameKey() map[string]*policiesv1.SamplePolicy {
+	plcMap := make(map[string]*policiesv1.SamplePolicy)
 	for _, policy := range availablePolicies.PolicyMap {
 		plcMap[policy.Name] = policy
 	}
 	return plcMap
 }
 
-func checkViolationsPerNamespace(roleBindingList *v1.RoleBindingList, plc *policiesv1alpha1.SamplePolicy) (userV, groupV int) {
+func checkViolationsPerNamespace(roleBindingList *v1.RoleBindingList, plc *policiesv1.SamplePolicy) (userV, groupV int) {
 	usersMap := make(map[string]bool)
 	groupsMap := make(map[string]bool)
 	for _, roleBinding := range roleBindingList.Items {
@@ -353,7 +353,7 @@ func checkViolationsPerNamespace(roleBindingList *v1.RoleBindingList, plc *polic
 	return userViolationCount, groupViolationCount
 }
 
-func addViolationCount(plc *policiesv1alpha1.SamplePolicy, userCount int, groupCount int, namespace string) bool {
+func addViolationCount(plc *policiesv1.SamplePolicy, userCount int, groupCount int, namespace string) bool {
 	changed := false
 	msg := fmt.Sprintf("%s violations detected in namespace `%s`, there are %v users violations and %v groups violations",
 		fmt.Sprint(userCount+groupCount),
@@ -385,8 +385,8 @@ func addViolationCount(plc *policiesv1alpha1.SamplePolicy, userCount int, groupC
 	return changed
 }
 
-func checkComplianceBasedOnDetails(plc *policiesv1alpha1.SamplePolicy) {
-	plc.Status.ComplianceState = policiesv1alpha1.Compliant
+func checkComplianceBasedOnDetails(plc *policiesv1.SamplePolicy) {
+	plc.Status.ComplianceState = policiesv1.Compliant
 	if plc.Status.CompliancyDetails == nil {
 		return
 	}
@@ -401,7 +401,7 @@ func checkComplianceBasedOnDetails(plc *policiesv1alpha1.SamplePolicy) {
 			violationNum := strings.Split(plc.Status.CompliancyDetails[plc.Name][namespace][0], " ")
 			if len(violationNum) > 0 {
 				if violationNum[0] != fmt.Sprint(0) {
-					plc.Status.ComplianceState = policiesv1alpha1.NonCompliant
+					plc.Status.ComplianceState = policiesv1.NonCompliant
 				}
 			}
 		} else {
@@ -410,41 +410,41 @@ func checkComplianceBasedOnDetails(plc *policiesv1alpha1.SamplePolicy) {
 	}
 }
 
-func checkComplianceChangeBasedOnDetails(plc *policiesv1alpha1.SamplePolicy) (complianceChanged bool) {
+func checkComplianceChangeBasedOnDetails(plc *policiesv1.SamplePolicy) (complianceChanged bool) {
 	//used in case we also want to know not just the compliance state, but also whether the compliance changed or not.
 	previous := plc.Status.ComplianceState
 	if plc.Status.CompliancyDetails == nil {
-		plc.Status.ComplianceState = policiesv1alpha1.UnknownCompliancy
+		plc.Status.ComplianceState = policiesv1.UnknownCompliancy
 		return reflect.DeepEqual(previous, plc.Status.ComplianceState)
 	}
 	if _, ok := plc.Status.CompliancyDetails[plc.Name]; !ok {
-		plc.Status.ComplianceState = policiesv1alpha1.UnknownCompliancy
+		plc.Status.ComplianceState = policiesv1.UnknownCompliancy
 		return reflect.DeepEqual(previous, plc.Status.ComplianceState)
 	}
 	if len(plc.Status.CompliancyDetails[plc.Name]) == 0 {
-		plc.Status.ComplianceState = policiesv1alpha1.UnknownCompliancy
+		plc.Status.ComplianceState = policiesv1.UnknownCompliancy
 		return reflect.DeepEqual(previous, plc.Status.ComplianceState)
 	}
-	plc.Status.ComplianceState = policiesv1alpha1.Compliant
+	plc.Status.ComplianceState = policiesv1.Compliant
 	for namespace, msgList := range plc.Status.CompliancyDetails[plc.Name] {
 		if len(msgList) > 0 {
 			violationNum := strings.Split(plc.Status.CompliancyDetails[plc.Name][namespace][0], " ")
 			if len(violationNum) > 0 {
 				if violationNum[0] != fmt.Sprint(0) {
-					plc.Status.ComplianceState = policiesv1alpha1.NonCompliant
+					plc.Status.ComplianceState = policiesv1.NonCompliant
 				}
 			}
 		} else {
 			return reflect.DeepEqual(previous, plc.Status.ComplianceState)
 		}
 	}
-	if plc.Status.ComplianceState != policiesv1alpha1.NonCompliant {
-		plc.Status.ComplianceState = policiesv1alpha1.Compliant
+	if plc.Status.ComplianceState != policiesv1.NonCompliant {
+		plc.Status.ComplianceState = policiesv1.Compliant
 	}
 	return reflect.DeepEqual(previous, plc.Status.ComplianceState)
 }
 
-func updatePolicyStatus(policies map[string]*policiesv1alpha1.SamplePolicy) (*policiesv1alpha1.SamplePolicy, error) {
+func updatePolicyStatus(policies map[string]*policiesv1.SamplePolicy) (*policiesv1.SamplePolicy, error) {
 	for _, instance := range policies { // policies is a map where: key = plc.Name, value = pointer to plc
 		err := reconcilingAgent.client.Status().Update(context.TODO(), instance)
 		if err != nil {
@@ -469,7 +469,7 @@ func getContainerID(pod corev1.Pod, containerName string) string {
 	return ""
 }
 
-func handleRemovingPolicy(plc *policiesv1alpha1.SamplePolicy) {
+func handleRemovingPolicy(plc *policiesv1.SamplePolicy) {
 	for k, v := range availablePolicies.PolicyMap {
 		if v.Name == plc.Name {
 			availablePolicies.RemoveObject(k)
@@ -477,7 +477,7 @@ func handleRemovingPolicy(plc *policiesv1alpha1.SamplePolicy) {
 	}
 }
 
-func handleAddingPolicy(plc *policiesv1alpha1.SamplePolicy) error {
+func handleAddingPolicy(plc *policiesv1.SamplePolicy) error {
 	allNamespaces, err := common.GetAllNamespaces()
 	if err != nil {
 		glog.Errorf("reason: error fetching the list of available namespaces, subject: K8s API server, namespace: all, according to policy: %v, additional-info: %v",
@@ -502,7 +502,7 @@ func handleAddingPolicy(plc *policiesv1alpha1.SamplePolicy) error {
 //=================================================================
 //deleteExternalDependency in case the CRD was related to non-k8s resource
 //nolint
-func (r *ReconcileSamplePolicy) deleteExternalDependency(instance *policiesv1alpha1.SamplePolicy) error {
+func (r *ReconcileSamplePolicy) deleteExternalDependency(instance *policiesv1.SamplePolicy) error {
 	glog.V(0).Infof("reason: CRD deletion, subject: policy/%v, namespace: %v, according to policy: none, additional-info: none\n",
 		instance.Name,
 		instance.Namespace)
@@ -535,8 +535,8 @@ func removeString(slice []string, s string) (result []string) {
 }
 
 //=================================================================
-// Helper functions that pretty prints a map
-func printMap(myMap map[string]*policiesv1alpha1.SamplePolicy) {
+// Helper functions that pretty prints a map.
+func printMap(myMap map[string]*policiesv1.SamplePolicy) {
 	if len(myMap) == 0 {
 		fmt.Println("Waiting for policies to be available for processing... ")
 		return
@@ -548,7 +548,7 @@ func printMap(myMap map[string]*policiesv1alpha1.SamplePolicy) {
 	}
 }
 
-func createParentPolicyEvent(instance *policiesv1alpha1.SamplePolicy) {
+func createParentPolicyEvent(instance *policiesv1.SamplePolicy) {
 	if len(instance.OwnerReferences) == 0 {
 		return //there is nothing to do, since no owner is set
 	}
@@ -565,12 +565,12 @@ func createParentPolicyEvent(instance *policiesv1alpha1.SamplePolicy) {
 		convertPolicyStatusToString(instance))
 }
 
-func createParentPolicy(instance *policiesv1alpha1.SamplePolicy) policiesv1alpha1.Policy {
+func createParentPolicy(instance *policiesv1.SamplePolicy) policiesv1.Policy {
 	ns := common.ExtractNamespaceLabel(instance)
 	if ns == "" {
 		ns = NamespaceWatched
 	}
-	plc := policiesv1alpha1.Policy{
+	plc := policiesv1.Policy{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      instance.OwnerReferences[0].Name,
 			Namespace: ns, // we are making an assumption here that the parent policy is in the watched-namespace passed as flag
@@ -578,15 +578,15 @@ func createParentPolicy(instance *policiesv1alpha1.SamplePolicy) policiesv1alpha
 		},
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "Policy",
-			APIVersion: " policies.ibm.com/v1alpha1",
+			APIVersion: " policies.open-cluster-management.io/v1",
 		},
 	}
 	return plc
 }
 
 //=================================================================
-// convertPolicyStatusToString to be able to pass the status as event
-func convertPolicyStatusToString(plc *policiesv1alpha1.SamplePolicy) (results string) {
+// convertPolicyStatusToString to be able to pass the status as event.
+func convertPolicyStatusToString(plc *policiesv1.SamplePolicy) (results string) {
 	result := "ComplianceState is still undetermined"
 	if plc.Status.ComplianceState == "" {
 		return result

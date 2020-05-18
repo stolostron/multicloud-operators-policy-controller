@@ -21,11 +21,11 @@ import (
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	policiesv1alpha1 "github.com/IBM/multicloud-operators-policy-controller/pkg/apis/policies/v1alpha1"
+	policiesv1 "github.com/open-cluster-management/multicloud-operators-policy-controller/pkg/apis/policies/v1"
 )
 
 /*
-	apiVersion: mcm.ibm.com/v1alpha1
+	apiVersion: mcm.ibm.com/v1
 		kind: GRCPolicy
 		metadata:
 			name: GRC-policy
@@ -37,14 +37,14 @@ import (
 			conditions:
 				ownership: [ReplicaSet, Deployment, DeamonSet, ReplicationController]
 */
-var plc = &policiesv1alpha1.SamplePolicy{
+var plc = &policiesv1.SamplePolicy{
 	ObjectMeta: metav1.ObjectMeta{
 		Name:      "testPolicy",
 		Namespace: "default",
 	},
-	Spec: policiesv1alpha1.SamplePolicySpec{
-		RemediationAction: policiesv1alpha1.Enforce,
-		NamespaceSelector: policiesv1alpha1.Target{
+	Spec: policiesv1.SamplePolicySpec{
+		RemediationAction: policiesv1.Enforce,
+		NamespaceSelector: policiesv1.Target{
 			Include: []string{"default"},
 			Exclude: []string{"kube*"},
 		},
@@ -52,10 +52,10 @@ var plc = &policiesv1alpha1.SamplePolicy{
 }
 
 var sm = SyncedPolicyMap{
-	PolicyMap: make(map[string]*policiesv1alpha1.SamplePolicy),
+	PolicyMap: make(map[string]*policiesv1.SamplePolicy),
 }
 
-//TestGetObject testing get object in map
+//TestGetObject testing get object in map.
 func TestGetObject(t *testing.T) {
 	_, found := sm.GetObject("void")
 	if found {

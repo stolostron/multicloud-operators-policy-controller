@@ -29,8 +29,8 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
-	policiesv1alpha1 "github.com/IBM/multicloud-operators-policy-controller/pkg/apis/policies/v1alpha1"
-	"github.com/IBM/multicloud-operators-policy-controller/pkg/common"
+	policiesv1 "github.com/open-cluster-management/multicloud-operators-policy-controller/pkg/apis/policies/v1"
+	"github.com/open-cluster-management/multicloud-operators-policy-controller/pkg/common"
 )
 
 var mgr manager.Manager
@@ -41,12 +41,12 @@ func TestReconcile(t *testing.T) {
 		name      = "foo"
 		namespace = "default"
 	)
-	instance := &policiesv1alpha1.SamplePolicy{
+	instance := &policiesv1.SamplePolicy{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "foo",
 			Namespace: "default",
 		},
-		Spec: policiesv1alpha1.SamplePolicySpec{
+		Spec: policiesv1.SamplePolicySpec{
 			MaxRoleBindingUsersPerNamespace: 1,
 		},
 	}
@@ -55,7 +55,7 @@ func TestReconcile(t *testing.T) {
 	objs := []runtime.Object{instance}
 	// Register operator types with the runtime scheme.
 	s := scheme.Scheme
-	s.AddKnownTypes(policiesv1alpha1.SchemeGroupVersion, instance)
+	s.AddKnownTypes(policiesv1.SchemeGroupVersion, instance)
 
 	// Create a fake client to mock API calls.
 	cl := fake.NewFakeClient(objs...)
@@ -102,12 +102,12 @@ func TestPeriodicallyExecSamplePolicies(t *testing.T) {
 			Namespace: namespace,
 		},
 	}
-	instance := &policiesv1alpha1.SamplePolicy{
+	instance := &policiesv1.SamplePolicy{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "foo",
 			Namespace: "default",
 		},
-		Spec: policiesv1alpha1.SamplePolicySpec{
+		Spec: policiesv1.SamplePolicySpec{
 			MaxRoleBindingUsersPerNamespace: 1,
 		},
 	}
@@ -116,7 +116,7 @@ func TestPeriodicallyExecSamplePolicies(t *testing.T) {
 	objs := []runtime.Object{instance}
 	// Register operator types with the runtime scheme.
 	s := scheme.Scheme
-	s.AddKnownTypes(policiesv1alpha1.SchemeGroupVersion, instance)
+	s.AddKnownTypes(policiesv1.SchemeGroupVersion, instance)
 
 	// Create a fake client to mock API calls.
 	cl := fake.NewFakeClient(objs...)
@@ -141,13 +141,13 @@ func TestPeriodicallyExecSamplePolicies(t *testing.T) {
 func TestCheckUnNamespacedPolicies(t *testing.T) {
 	var simpleClient kubernetes.Interface = testclient.NewSimpleClientset()
 	common.Initialize(&simpleClient, nil)
-	var samplePolicy = policiesv1alpha1.SamplePolicy{
+	var samplePolicy = policiesv1.SamplePolicy{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "foo",
 			Namespace: "default",
 		}}
 
-	var policies = map[string]*policiesv1alpha1.SamplePolicy{}
+	var policies = map[string]*policiesv1.SamplePolicy{}
 	policies["policy1"] = &samplePolicy
 
 	err := checkUnNamespacedPolicies(policies)
@@ -216,7 +216,7 @@ func TestCheckViolationsPerNamespace(t *testing.T) {
 	var roleBindingList = sub.RoleBindingList{
 		Items: items,
 	}
-	var samplePolicySpec = policiesv1alpha1.SamplePolicySpec{
+	var samplePolicySpec = policiesv1.SamplePolicySpec{
 		MaxRoleBindingUsersPerNamespace:  1,
 		MaxRoleBindingGroupsPerNamespace: 1,
 		MaxClusterRoleBindingUsers:       1,
@@ -250,7 +250,7 @@ func TestConvertPolicyStatusToString(t *testing.T) {
 	compliantDetails["a"] = compliantDetail
 	compliantDetails["b"] = compliantDetail
 	compliantDetails["c"] = compliantDetail
-	samplePolicyStatus := policiesv1alpha1.SamplePolicyStatus{
+	samplePolicyStatus := policiesv1.SamplePolicyStatus{
 		ComplianceState:   "Compliant",
 		CompliancyDetails: compliantDetails,
 	}

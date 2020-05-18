@@ -22,7 +22,7 @@
 
 ## What is Policy Controller
 
-The policy controllers are Kubernetes CustomResourceDefinition (CRD) instance that can integrate with Governance Risk and Compliance (GRC) framework on IBM Multicloud management. Policy controller can monitor and report whether the Kubernetes cluster is compliant with the policy. It can also enforce the policy to bring the cluster state to compliance. This repo includes the policy controller framework with a sample policy controller.
+The policy controllers are Kubernetes CustomResourceDefinition (CRD) instance that can integrate with Governance Risk and Compliance (GRC) framework on Red Hat Advanced Cluster Management for Kubernetes. Policy controller can monitor and report whether the Kubernetes cluster is compliant with the policy. It can also enforce the policy to bring the cluster state to compliance. This repo includes the policy controller framework with a sample policy controller.
 
 ## Securing the Policy Controller
 

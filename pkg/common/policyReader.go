@@ -28,7 +28,7 @@ import (
 	"k8s.io/client-go/restmapper"
 )
 
-// GetGenericObject returns a generic object information from the k8s API server
+// GetGenericObject returns a generic object information from the k8s API server.
 func GetGenericObject(data []byte, namespace string) (unstructured.Unstructured, error) {
 	var unstruct unstructured.Unstructured
 	namespaced := true

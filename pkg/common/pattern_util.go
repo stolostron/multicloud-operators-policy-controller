@@ -20,16 +20,16 @@ import (
 
 	"github.com/golang/glog"
 
-	policiesv1alpha1 "github.com/IBM/multicloud-operators-policy-controller/pkg/apis/policies/v1alpha1"
+	policiesv1 "github.com/open-cluster-management/multicloud-operators-policy-controller/pkg/apis/policies/v1"
 )
 
-// IfMatch check matches
+// IfMatch check matches.
 func IfMatch(name string, included, excluded []string) bool {
 	all := []string{name}
 	return len(MatchNames(all, included, excluded)) > 0
 }
 
-// MatchNames matches names
+// MatchNames matches names.
 func MatchNames(all, included, excluded []string) []string {
 	glog.V(6).Infof("MatchNames all = %v, included = %v, excluded = %v", all, included, excluded)
 	//list of included
@@ -52,7 +52,7 @@ func MatchNames(all, included, excluded []string) []string {
 	return finalList
 }
 
-// FindPattern finds patterns
+// FindPattern finds patterns.
 func FindPattern(pattern string, list []string) (result []string) {
 	//if pattern = "*" => all namespaces are included
 	if pattern == "*" {
@@ -105,7 +105,7 @@ func FindPattern(pattern string, list []string) (result []string) {
 	return found
 }
 
-// DeduplicateItems does the dedup
+// DeduplicateItems does the dedup.
 func DeduplicateItems(included []string, excluded []string) (res []string) {
 	encountered := map[string]bool{}
 	result := []string{}
@@ -123,19 +123,19 @@ func DeduplicateItems(included []string, excluded []string) (res []string) {
 	return result
 }
 
-//ToFixed returns a float with a certain precision
+//ToFixed returns a float with a certain precision.
 func ToFixed(num float64, precision int) float64 {
 	output := math.Pow(10, float64(precision))
 	return float64(Round(num*output)) / output
 }
 
-//Round rounds the value
+//Round rounds the value.
 func Round(num float64) int {
 	return int(num + math.Copysign(0.5, num))
 }
 
-// ExtractNamespaceLabel to find out the cluster-namespace from the label
-func ExtractNamespaceLabel(instance *policiesv1alpha1.SamplePolicy) string {
+// ExtractNamespaceLabel to find out the cluster-namespace from the label.
+func ExtractNamespaceLabel(instance *policiesv1.SamplePolicy) string {
 	if instance.ObjectMeta.Labels == nil {
 		return ""
 	}

@@ -11,7 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-package v1alpha1
+package v1
 
 import (
 	"reflect"
@@ -36,7 +36,7 @@ var samplePolicySpec = SamplePolicySpec{
 
 var typeMeta = metav1.TypeMeta{
 	Kind:       "Policy",
-	APIVersion: "v1alpha1",
+	APIVersion: "v1",
 }
 
 var objectMeta = metav1.ObjectMeta{
@@ -63,7 +63,7 @@ func TestPolicyDeepCopyInto(t *testing.T) {
 func TestPolicyDeepCopy(t *testing.T) {
 	typeMeta := metav1.TypeMeta{
 		Kind:       "Policy",
-		APIVersion: "v1alpha1",
+		APIVersion: "v1",
 	}
 
 	objectMeta := metav1.ObjectMeta{
