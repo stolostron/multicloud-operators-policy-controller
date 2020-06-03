@@ -45,7 +45,7 @@ import (
 var log = logf.Log.WithName("controller_samplepolicy")
 
 // Finalizer used to ensure consistency when deleting a CRD.
-const Finalizer = "finalizer.policies.open-cluster-management.io"
+const Finalizer = "finalizer.policy.open-cluster-management.io"
 
 const grcCategory = "system-and-information-integrity"
 
@@ -581,7 +581,7 @@ func createParentPolicy(instance *policiesv1.SamplePolicy) policiesv1.Policy {
 		},
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "Policy",
-			APIVersion: " policies.open-cluster-management.io/v1",
+			APIVersion: " policy.open-cluster-management.io/v1",
 		},
 	}
 	return plc

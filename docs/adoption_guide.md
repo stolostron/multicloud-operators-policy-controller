@@ -18,14 +18,14 @@ Make sure to export GO111MODULE=on as it uses go mod as dependency manager.
 
 ```bash
 export GO111MODULE=on
-kubectl apply -f deploy/crds/policies.open-cluster-management.io_samplepolicies_crd.yaml
+kubectl apply -f deploy/crds/policy.open-cluster-management.io_samplepolicies_crd.yaml
 operator-sdk run --local --verbose
 ```
 It takes seconds for the sample policy controller to fully start. You will get the message `Waiting for policies to be available for processing...` once it's fully started and watching for policies.
 
 To test a sample policy, open another command prompt to deploy the sample policy file
 ```
-kubectl apply -f deploy/crds/policies.open-cluster-management.io_v1_samplepolicy_cr.yaml -n default
+kubectl apply -f deploy/crds/policy.open-cluster-management.io_v1_samplepolicy_cr.yaml -n default
 ```
 The local process outputs the following messages
 ```
@@ -52,7 +52,7 @@ Status:
 ## Build a local container image
 ### Using operator-sdk command
 ```bash
-operator-sdk build ibm/multicloud-operators-policy-controller:latest
+operator-sdk build redhat/multicloud-operators-policy-controller:latest
 ```
 
 ## Make your own policy controller
@@ -65,7 +65,7 @@ for file in $(find . -name "*.go" -type f); do  sed -i "" "s/SamplePolicy/TestPo
 ```
 ### Change CRD
 
-CRD definition file is located at: [deploy/crds/policies.open-cluster-management.io_samplepolicies_crd.yaml](../deploy/crds/policies.open-cluster-management.io_samplepolicies_crd.yaml)
+CRD definition file is located at: [deploy/crds/policy.open-cluster-management.io_samplepolicies_crd.yaml](../deploy/crds/policy.open-cluster-management.io_samplepolicies_crd.yaml)
 
 Change below section to match the kind you specified in previous step.
 
@@ -79,7 +79,7 @@ names:
 
 ### Change CR
 
-A sample CR is located at: [deploy/crds/policies.open-cluster-management.io_v1_samplepolicy_cr.yaml](../deploy/crds/policies.open-cluster-management.io_v1_samplepolicy_cr.yaml)
+A sample CR is located at: [deploy/crds/policy.open-cluster-management.io_v1_samplepolicy_cr.yaml](../deploy/crds/policy.open-cluster-management.io_v1_samplepolicy_cr.yaml)
 
 Change below section to match the kind you specified in previous step.
 
