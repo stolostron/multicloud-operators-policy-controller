@@ -25,7 +25,7 @@ import (
 )
 
 /*
-	apiVersion: mcm.ibm.com/v1
+	apiVersion: policy.open-cluster-management.io/v1
 		kind: GRCPolicy
 		metadata:
 			name: GRC-policy
