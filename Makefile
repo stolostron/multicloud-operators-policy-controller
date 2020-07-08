@@ -140,25 +140,8 @@ clean:
 ############################################################
 # e2e test section
 ############################################################
-.PHONY: kind-bootstrap-cluster
-kind-bootstrap-cluster: kind-create-cluster install-crds kind-deploy-controller install-resources
-
 .PHONY: kind-bootstrap-cluster-dev
 kind-bootstrap-cluster-dev: kind-create-cluster install-crds install-resources
-
-check-env:
-ifndef DOCKER_USER
-	$(error DOCKER_USER is undefined)
-endif
-ifndef DOCKER_PASS
-	$(error DOCKER_PASS is undefined)
-endif
-
-kind-deploy-controller: check-env
-	@echo installing policy-template-sync
-	kubectl create ns multicluster-endpoint
-	kubectl create secret -n multicluster-endpoint docker-registry multiclusterhub-operator-pull-secret --docker-server=quay.io --docker-username=${DOCKER_USER} --docker-password=${DOCKER_PASS}
-	kubectl apply -f deploy/ -n multicluster-endpoint
 
 kind-create-cluster:
 	@echo "creating cluster"
