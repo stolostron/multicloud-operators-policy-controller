@@ -1,4 +1,4 @@
-// Copyright 2019 The Kubernetes Authors.
+// Copyright 2020 The Kubernetes Authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -262,12 +262,6 @@ func TestConvertPolicyStatusToString(t *testing.T) {
 	addViolationCount(&samplePolicy, 1, 1, "default")
 }
 
-func TestDeleteExternalDependency(t *testing.T) {
-	mgr, err = manager.New(cfg, manager.Options{})
-	reconcileSamplePolicy := ReconcileSamplePolicy{client: mgr.GetClient(), scheme: mgr.GetScheme(), recorder: mgr.GetEventRecorderFor("samplepolicy-controller")}
-	reconcileSamplePolicy.deleteExternalDependency(&samplePolicy)
-}
-
 func TestHandleAddingPolicy(t *testing.T) {
 	var simpleClient kubernetes.Interface = testclient.NewSimpleClientset()
 	var typeMeta = metav1.TypeMeta{
@@ -284,7 +278,7 @@ func TestHandleAddingPolicy(t *testing.T) {
 	common.Initialize(&simpleClient, nil)
 	err := handleAddingPolicy(&samplePolicy)
 	assert.Nil(t, err)
-	handleRemovingPolicy(&samplePolicy)
+	handleRemovingPolicy(samplePolicy.GetName())
 }
 
 func TestGetContainerID(t *testing.T) {

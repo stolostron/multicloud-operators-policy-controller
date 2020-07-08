@@ -147,61 +147,22 @@ func (r *ReconcileSamplePolicy) Reconcile(request reconcile.Request) (reconcile.
 			// Request object not found, could have been deleted after reconcile request.
 			// Owned objects are automatically garbage collected. For additional cleanup logic use finalizers.
 			// Return and don't requeue
+			reqLogger.Info("Sample policy was deleted, removing it...")
+			handleRemovingPolicy(request.NamespacedName.Name)
 			return reconcile.Result{}, nil
 		}
 		// Error reading the object - requeue the request.
+		reqLogger.Info("Failed to retrieve configuration policy", "err", err)
 		return reconcile.Result{}, err
 	}
 
-	// name of our mcm custom finalizer
-	myFinalizerName := Finalizer
-
-	if instance.ObjectMeta.DeletionTimestamp.IsZero() {
-		updateNeeded := false
-		// The object is not being deleted, so if it might not have our finalizer,
-		// then lets add the finalizer and update the object.
-		if !containsString(instance.ObjectMeta.Finalizers, myFinalizerName) {
-			instance.ObjectMeta.Finalizers = append(instance.ObjectMeta.Finalizers, myFinalizerName)
-			updateNeeded = true
-		}
-		if !ensureDefaultLabel(instance) {
-			updateNeeded = true
-		}
-		if updateNeeded {
-			if err := r.client.Update(context.Background(), instance); err != nil {
-				return reconcile.Result{Requeue: true}, nil
-			}
-		}
-		instance.Status.CompliancyDetails = nil //reset CompliancyDetails
-		err := handleAddingPolicy(instance)
-		if err != nil {
-			glog.V(3).Infof("Failed to handleAddingPolicy")
-		}
-	} else {
-		handleRemovingPolicy(instance)
-		// The object is being deleted
-		if containsString(instance.ObjectMeta.Finalizers, myFinalizerName) {
-			// our finalizer is present, so lets handle our external dependency
-			if err := r.deleteExternalDependency(instance); err != nil {
-				// if fail to delete the external dependency here, return with error
-				// so that it can be retried
-				return reconcile.Result{}, err
-			}
-
-			// remove our finalizer from the list and update it.
-			instance.ObjectMeta.Finalizers = removeString(instance.ObjectMeta.Finalizers, myFinalizerName)
-			if err := r.client.Update(context.Background(), instance); err != nil {
-				return reconcile.Result{Requeue: true}, nil
-			}
-		}
-		// Our finalizer has finished, so the reconciler can do nothing.
-		return reconcile.Result{}, nil
+	reqLogger.Info("Sample policy was found, adding it...")
+	err = handleAddingPolicy(instance)
+	if err != nil {
+		reqLogger.Info("Failed to handleAddingPolicy", "err", err)
+		return reconcile.Result{}, err
 	}
-	glog.V(3).Infof("reason: successful processing, subject: policy/%v, namespace: %v, according to policy: %v, additional-info: none",
-		instance.Name, instance.Namespace, instance.Name)
-
-	// Pod already exists - don't requeue
-	// reqLogger.Info("Skip reconcile: Pod already exists", "Pod.Namespace", found.Namespace, "Pod.Name", found.Name)
+	reqLogger.Info("Reconcile complete.")
 	return reconcile.Result{}, nil
 }
 
@@ -470,9 +431,9 @@ func getContainerID(pod corev1.Pod, containerName string) string {
 	return ""
 }
 
-func handleRemovingPolicy(plc *policiesv1.SamplePolicy) {
+func handleRemovingPolicy(name string) {
 	for k, v := range availablePolicies.PolicyMap {
-		if v.Name == plc.Name {
+		if v.Name == name {
 			availablePolicies.RemoveObject(k)
 		}
 	}
@@ -500,41 +461,6 @@ func handleAddingPolicy(plc *policiesv1.SamplePolicy) error {
 		availablePolicies.AddObject(key, plc)
 	}
 	return err
-}
-
-//=================================================================
-//deleteExternalDependency in case the CRD was related to non-k8s resource
-//nolint
-func (r *ReconcileSamplePolicy) deleteExternalDependency(instance *policiesv1.SamplePolicy) error {
-	glog.V(0).Infof("reason: CRD deletion, subject: policy/%v, namespace: %v, according to policy: none, additional-info: none\n",
-		instance.Name,
-		instance.Namespace)
-	// Ensure that delete implementation is idempotent and safe to invoke
-	// multiple types for same object.
-	return nil
-}
-
-//=================================================================
-// Helper functions to check if a string exists in a slice of strings.
-func containsString(slice []string, s string) bool {
-	for _, item := range slice {
-		if item == s {
-			return true
-		}
-	}
-	return false
-}
-
-//=================================================================
-// Helper functions to remove a string from a slice of strings.
-func removeString(slice []string, s string) (result []string) {
-	for _, item := range slice {
-		if item == s {
-			continue
-		}
-		result = append(result, item)
-	}
-	return
 }
 
 //=================================================================
@@ -581,7 +507,7 @@ func createParentPolicy(instance *policiesv1.SamplePolicy) policiesv1.Policy {
 		},
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "Policy",
-			APIVersion: " policy.open-cluster-management.io/v1",
+			APIVersion: "policy.open-cluster-management.io/v1",
 		},
 	}
 	return plc

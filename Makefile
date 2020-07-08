@@ -136,3 +136,44 @@ build-push-images: $(CONFIG_DOCKER_TARGET)
 ############################################################
 clean:
 	rm -f build/_output/bin/*
+
+############################################################
+# e2e test section
+############################################################
+.PHONY: kind-bootstrap-cluster
+kind-bootstrap-cluster: kind-create-cluster install-crds kind-deploy-controller install-resources
+
+.PHONY: kind-bootstrap-cluster-dev
+kind-bootstrap-cluster-dev: kind-create-cluster install-crds install-resources
+
+check-env:
+ifndef DOCKER_USER
+	$(error DOCKER_USER is undefined)
+endif
+ifndef DOCKER_PASS
+	$(error DOCKER_PASS is undefined)
+endif
+
+kind-deploy-controller: check-env
+	@echo installing policy-template-sync
+	kubectl create ns multicluster-endpoint
+	kubectl create secret -n multicluster-endpoint docker-registry multiclusterhub-operator-pull-secret --docker-server=quay.io --docker-username=${DOCKER_USER} --docker-password=${DOCKER_PASS}
+	kubectl apply -f deploy/ -n multicluster-endpoint
+
+kind-create-cluster:
+	@echo "creating cluster"
+	kind create cluster --name test-managed
+
+kind-delete-cluster:
+	kind delete cluster --name test-managed
+
+install-crds:
+	@echo installing crds
+	kubectl apply -f deploy/crds/policy.open-cluster-management.io_samplepolicies_crd.yaml
+
+install-resources:
+	@echo creating namespaces
+	kubectl create ns managed
+ 
+e2e-test:
+	ginkgo -v --slowSpecThreshold=10 test/e2e
