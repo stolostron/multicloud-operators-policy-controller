@@ -136,3 +136,27 @@ build-push-images: $(CONFIG_DOCKER_TARGET)
 ############################################################
 clean:
 	rm -f build/_output/bin/*
+
+############################################################
+# e2e test section
+############################################################
+.PHONY: kind-bootstrap-cluster-dev
+kind-bootstrap-cluster-dev: kind-create-cluster install-crds install-resources
+
+kind-create-cluster:
+	@echo "creating cluster"
+	kind create cluster --name test-managed
+
+kind-delete-cluster:
+	kind delete cluster --name test-managed
+
+install-crds:
+	@echo installing crds
+	kubectl apply -f deploy/crds/policy.open-cluster-management.io_samplepolicies_crd.yaml
+
+install-resources:
+	@echo creating namespaces
+	kubectl create ns managed
+ 
+e2e-test:
+	ginkgo -v --slowSpecThreshold=10 test/e2e

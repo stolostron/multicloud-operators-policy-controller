@@ -1,4 +1,4 @@
-// Copyright 2019 The Kubernetes Authors.
+// Copyright 2020 The Kubernetes Authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -154,29 +154,6 @@ func TestCheckUnNamespacedPolicies(t *testing.T) {
 	assert.Nil(t, err)
 }
 
-func TestEnsureDefaultLabel(t *testing.T) {
-	updateNeeded := ensureDefaultLabel(&samplePolicy)
-	assert.True(t, updateNeeded)
-
-	var labels1 = map[string]string{}
-	labels1["category"] = grcCategory
-	samplePolicy.Labels = labels1
-	updateNeeded = ensureDefaultLabel(&samplePolicy)
-	assert.False(t, updateNeeded)
-
-	var labels2 = map[string]string{}
-	labels2["category"] = "foo"
-	samplePolicy.Labels = labels2
-	updateNeeded = ensureDefaultLabel(&samplePolicy)
-	assert.True(t, updateNeeded)
-
-	var labels3 = map[string]string{}
-	labels3["foo"] = grcCategory
-	samplePolicy.Labels = labels3
-	updateNeeded = ensureDefaultLabel(&samplePolicy)
-	assert.True(t, updateNeeded)
-}
-
 func TestCheckAllClusterLevel(t *testing.T) {
 	var subject = sub.Subject{
 		APIGroup:  "",
@@ -262,12 +239,6 @@ func TestConvertPolicyStatusToString(t *testing.T) {
 	addViolationCount(&samplePolicy, 1, 1, "default")
 }
 
-func TestDeleteExternalDependency(t *testing.T) {
-	mgr, err = manager.New(cfg, manager.Options{})
-	reconcileSamplePolicy := ReconcileSamplePolicy{client: mgr.GetClient(), scheme: mgr.GetScheme(), recorder: mgr.GetEventRecorderFor("samplepolicy-controller")}
-	reconcileSamplePolicy.deleteExternalDependency(&samplePolicy)
-}
-
 func TestHandleAddingPolicy(t *testing.T) {
 	var simpleClient kubernetes.Interface = testclient.NewSimpleClientset()
 	var typeMeta = metav1.TypeMeta{
@@ -284,7 +255,7 @@ func TestHandleAddingPolicy(t *testing.T) {
 	common.Initialize(&simpleClient, nil)
 	err := handleAddingPolicy(&samplePolicy)
 	assert.Nil(t, err)
-	handleRemovingPolicy(&samplePolicy)
+	handleRemovingPolicy(samplePolicy.GetName())
 }
 
 func TestGetContainerID(t *testing.T) {
