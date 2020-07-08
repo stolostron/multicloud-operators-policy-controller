@@ -93,14 +93,6 @@ func add(mgr manager.Manager, r reconcile.Reconciler) error {
 	if err != nil {
 		return err
 	}
-	// Watch for changes to secondary resource Pods and requeue the owner SamplePolicy
-	err = c.Watch(&source.Kind{Type: &corev1.Pod{}}, &handler.EnqueueRequestForOwner{
-		IsController: true,
-		OwnerType:    &policiesv1.SamplePolicy{},
-	})
-	if err != nil {
-		return err
-	}
 
 	return nil
 }
