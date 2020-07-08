@@ -11,6 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+
 package samplepolicy
 
 import (
@@ -98,8 +99,8 @@ func add(mgr manager.Manager, r reconcile.Reconciler) error {
 }
 
 // Initialize to initialize some controller variables.
-func Initialize(kClient *kubernetes.Interface, mgr manager.Manager, namespace, eventParent string) {
-	KubeClient = kClient
+func Initialize(client *kubernetes.Interface, mgr manager.Manager, namespace, eventParent string) {
+	KubeClient = client
 	PlcChan = make(chan *policiesv1.SamplePolicy, 100) //buffering up to 100 policies for update
 
 	NamespaceWatched = namespace
