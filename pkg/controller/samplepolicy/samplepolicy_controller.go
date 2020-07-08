@@ -45,11 +45,6 @@ import (
 
 var log = logf.Log.WithName("controller_samplepolicy")
 
-// Finalizer used to ensure consistency when deleting a CRD.
-const Finalizer = "finalizer.policy.open-cluster-management.io"
-
-const grcCategory = "system-and-information-integrity"
-
 // availablePolicies is a cach all all available polices.
 var availablePolicies common.SyncedPolicyMap
 
@@ -66,9 +61,6 @@ var NamespaceWatched string
 
 // EventOnParent specifies if we also want to send events to the parent policy. Available options are yes/no/ifpresent.
 var EventOnParent string
-
-// PrometheusAddr port addr for prom metrics.
-var PrometheusAddr string
 
 // Add creates a new SamplePolicy Controller and adds it to the Manager. The Manager will set fields on the Controller
 // and Start it when the Manager is Started.
@@ -211,25 +203,6 @@ func PeriodicallyExecSamplePolicies(freq uint) {
 			return
 		}
 	}
-}
-
-func ensureDefaultLabel(instance *policiesv1.SamplePolicy) (updateNeeded bool) {
-	//we need to ensure this label exists -> category: "System and Information Integrity"
-	if instance.ObjectMeta.Labels == nil {
-		newlbl := make(map[string]string)
-		newlbl["category"] = grcCategory
-		instance.ObjectMeta.Labels = newlbl
-		return true
-	}
-	if _, ok := instance.ObjectMeta.Labels["category"]; !ok {
-		instance.ObjectMeta.Labels["category"] = grcCategory
-		return true
-	}
-	if instance.ObjectMeta.Labels["category"] != grcCategory {
-		instance.ObjectMeta.Labels["category"] = grcCategory
-		return true
-	}
-	return false
 }
 
 func checkUnNamespacedPolicies(plcToUpdateMap map[string]*policiesv1.SamplePolicy) error {

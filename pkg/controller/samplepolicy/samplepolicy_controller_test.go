@@ -154,29 +154,6 @@ func TestCheckUnNamespacedPolicies(t *testing.T) {
 	assert.Nil(t, err)
 }
 
-func TestEnsureDefaultLabel(t *testing.T) {
-	updateNeeded := ensureDefaultLabel(&samplePolicy)
-	assert.True(t, updateNeeded)
-
-	var labels1 = map[string]string{}
-	labels1["category"] = grcCategory
-	samplePolicy.Labels = labels1
-	updateNeeded = ensureDefaultLabel(&samplePolicy)
-	assert.False(t, updateNeeded)
-
-	var labels2 = map[string]string{}
-	labels2["category"] = "foo"
-	samplePolicy.Labels = labels2
-	updateNeeded = ensureDefaultLabel(&samplePolicy)
-	assert.True(t, updateNeeded)
-
-	var labels3 = map[string]string{}
-	labels3["foo"] = grcCategory
-	samplePolicy.Labels = labels3
-	updateNeeded = ensureDefaultLabel(&samplePolicy)
-	assert.True(t, updateNeeded)
-}
-
 func TestCheckAllClusterLevel(t *testing.T) {
 	var subject = sub.Subject{
 		APIGroup:  "",
