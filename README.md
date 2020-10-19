@@ -40,7 +40,7 @@ Check the [CONTRIBUTING Doc](CONTRIBUTING.md) for how to contribute to the repo.
 
 You can reach the maintainers of this project at:
 
-- [#xxx on Slack](https://slack.com/signin?redir=%2Fmessages%2Fxxx)
+- acm-contact@redhat.com
 
 ------
 
