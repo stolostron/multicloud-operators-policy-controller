@@ -6,7 +6,7 @@
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 <!-- **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)* -->
-# DEPRECATED -- This repo is deprecated. If you want to integrate your policy engine with governance policy framework, please read https://github.com/open-cluster-management/governance-policy-framework
+# Deprecated -- This repository is deprecated. If you want to integrate your policy engine with the governance policy framework, see the [governance-policy-framework repository](https://github.com/open-cluster-management/governance-policy-framework).
 
 **Table of Contents** 
 - [Policy Controller](#policy-controller)
